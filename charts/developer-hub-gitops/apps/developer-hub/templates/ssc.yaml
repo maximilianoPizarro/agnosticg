@@ -5,6 +5,7 @@ metadata:
 allowPrivilegedContainer: false
 allowHostDirVolumePlugin: false
 allowHostNetwork: false
+allowHostPorts: false
 allowHostPID: false
 allowHostIPC: false
 readOnlyRootFilesystem: false
