@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: developer-hub
+  namespace: openshift-gitops
+spec:
+  generators:
+    - list:
+        elements:
+          - name: rhdh
+            namespace: developer-hub
+            path: charts/developer-hub-gitops/apps/developer-hub
+  template:
+    metadata:
+      name: '{{name}}'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/maximilianoPizarro/agnosticg.git'
+        targetRevision: main
+        path: '{{path}}'
+        helm:
+          valueFiles:
+            - helm-values.yaml
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
