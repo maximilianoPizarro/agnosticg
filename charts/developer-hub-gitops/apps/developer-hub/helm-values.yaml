@@ -65,7 +65,7 @@ upstream:
         valueFrom:
           secretKeyRef:
             key: token
-            name: backstage-read-only
+            name: default
     extraVolumeMounts:
       - mountPath: /opt/app-root/src/dynamic-plugins-root
         name: dynamic-plugins-root
