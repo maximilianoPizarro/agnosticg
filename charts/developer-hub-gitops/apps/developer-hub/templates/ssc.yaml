@@ -3,19 +3,10 @@ kind: SecurityContextConstraints
 metadata:
   name: rhdh-scc
 allowPrivilegedContainer: false
-allowedCapabilities: []
 allowHostDirVolumePlugin: false
-allowHostIPC: false
 allowHostNetwork: false
 allowHostPID: false
-allowHostPorts: false
-allowHostNamespace: false
-allowPrivilegeEscalation: true
-defaultAddCapabilities: []
-fsGroup:
-  type: RunAsAny
-groups: []
-priority: 10
+allowHostIPC: false
 readOnlyRootFilesystem: false
 requiredDropCapabilities:
   - MKNOD
@@ -23,15 +14,16 @@ runAsUser:
   type: RunAsAny
 seLinuxContext:
   type: RunAsAny
+fsGroup:
+  type: RunAsAny
 supplementalGroups:
   type: RunAsAny
 volumes:
   - configMap
+  - downwardAPI
   - emptyDir
+  - persistentVolumeClaim
   - projected
   - secret
-  - downwardAPI
-  - ephemeral
-  - persistentVolumeClaim
 users:
   - system:serviceaccount:developer-hub:backstage-read-only
