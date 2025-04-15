@@ -70,14 +70,7 @@ upstream:
       - mountPath: /opt/app-root/src/dynamic-plugins-root
         name: dynamic-plugins-root
     extraVolumes:
-      - ephemeral:
-          volumeClaimTemplate:
-            spec:
-              accessModes:
-                - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 2Gi
+      - emptyDir: {}
         name: dynamic-plugins-root
       - configMap:
           defaultMode: 420

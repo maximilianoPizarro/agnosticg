@@ -1,0 +1,30 @@
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: rhdh-scc
+allowPrivilegedContainer: false
+allowHostDirVolumePlugin: false
+allowHostNetwork: false
+allowHostPorts: false
+allowHostPID: false
+allowHostIPC: false
+readOnlyRootFilesystem: false
+allowHostDevices: false
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+fsGroup:
+  type: RunAsAny
+supplementalGroups:
+  type: RunAsAny
+users:
+- system:serviceaccount:developer-hub:backstage-read-only
+volumes:
+  - configMap
+  - downwardAPI
+  - emptyDir
+  - ephemeral        # <- Este es el que se necesita
+  - persistentVolumeClaim
+  - projected
+  - secret
