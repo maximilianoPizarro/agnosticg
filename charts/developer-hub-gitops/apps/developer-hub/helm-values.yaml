@@ -65,7 +65,7 @@ upstream:
         valueFrom:
           secretKeyRef:
             key: token
-            name: default
+            name: default-token-9wr72
     extraVolumeMounts:
       - mountPath: /opt/app-root/src/dynamic-plugins-root
         name: dynamic-plugins-root
