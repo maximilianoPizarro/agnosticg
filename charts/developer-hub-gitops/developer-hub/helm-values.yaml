@@ -56,7 +56,7 @@ redhat-developer-hub:
         - name: POSTGRESQL_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
-              key: rhdh-password
+              key: postgres-password
               name: '{{- include "janus-idp.postgresql.secretName" . }}'
         - name: K8S_CLUSTER_NAME
           value: cluster.local
@@ -176,7 +176,7 @@ redhat-developer-hub:
           - name: POSTGRESQL_ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:
-                key: rhdh-password
+                key: posgres-password
                 name: '{{- include "postgresql.v1.secretName" . }}'
         persistence:
           enabled: true
