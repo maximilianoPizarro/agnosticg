@@ -1,4 +1,4 @@
-developer-hub:
+redhat-developer-hub:
   global:
     auth:
       backend:
