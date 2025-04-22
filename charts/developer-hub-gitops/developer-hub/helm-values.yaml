@@ -5,7 +5,7 @@ redhat-developer-hub:
     enabled: true
     accessMode: ReadWriteOnce
     size: 5Gi
-    storageClass: gp2
+    storageClass: ephemeral
 
   global:
     auth:
@@ -183,7 +183,7 @@ redhat-developer-hub:
         userPasswordKey: password
     primary:
       persistence:
-        enabled: true
+        enabled: false
         mountPath: /var/lib/pgsql/data
         size: 1Gi
 
