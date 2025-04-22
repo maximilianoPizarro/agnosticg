@@ -178,13 +178,13 @@ redhat-developer-hub:
     primary:
       persistence:
         enabled: false
-    volumeMounts:
-      - mountPath: /var/lib/pgsql/data
-        name: data
-  volumes:
-    - name: data
-      persistentVolumeClaim:
-        claimName: postgres-pvc
+      volumeMounts:
+        - mountPath: /var/lib/pgsql/data
+          name: data
+    volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: postgres-pvc
   test:
     enabled: true
     image:
