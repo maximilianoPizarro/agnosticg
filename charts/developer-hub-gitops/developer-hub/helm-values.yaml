@@ -5,7 +5,7 @@ redhat-developer-hub:
     enabled: true
     accessMode: ReadWriteOnce
     size: 5Gi
-    storageClass: standard
+    storageClass: gp2
 
   global:
     auth:
