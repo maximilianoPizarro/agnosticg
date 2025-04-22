@@ -21,6 +21,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 argocd.argoproj.io/managed-by: openshift-gitops
 helm.sh/chart: upstream-1.5.1
+app.kubernetes.io/managed-by: Helm
 {{- end }}
 
 {{/*
@@ -32,6 +33,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 app: developer-hub
 argocd.argoproj.io/managed-by: openshift-gitopss
 helm.sh/chart: upstream-1.5.1
+app.kubernetes.io/managed-by: Helm
 {{- end }}
 
 {{/*

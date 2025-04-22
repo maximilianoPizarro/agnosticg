@@ -170,7 +170,7 @@ redhat-developer-hub:
           memory: 1Gi
 
   postgresql:
-    enabled: true
+    enabled: false
     auth:
       secretKeys:
         adminPasswordKey: postgres-password
@@ -178,13 +178,6 @@ redhat-developer-hub:
     primary:
       persistence:
         enabled: false
-      volumeMounts:
-        - mountPath: /var/lib/pgsql/data
-          name: data
-    volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: postgres-pvc
   test:
     enabled: true
     image:
