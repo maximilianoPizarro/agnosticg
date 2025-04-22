@@ -177,12 +177,14 @@ redhat-developer-hub:
         userPasswordKey: password
     primary:
       persistence:
-        enabled: true
-        mountPath: /var/lib/pgsql/data
-        size: 1Gi
-        existingClaim: postgres-pvc
-        storageClass: ephemeral
-
+        enabled: false
+    volumeMounts:
+      - mountPath: /var/lib/pgsql/data
+        name: data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: postgres-pvc
   test:
     enabled: true
     image:
