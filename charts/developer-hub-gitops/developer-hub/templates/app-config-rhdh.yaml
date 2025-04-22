@@ -2,6 +2,8 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: app-config-rhdh
+  labels:
+    {{- include "developer-hub.labels" . | nindent 4 }}
 data:
   app-config-rhdh.yaml: |
     app:
