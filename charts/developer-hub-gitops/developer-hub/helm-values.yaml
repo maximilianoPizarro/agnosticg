@@ -1,12 +1,6 @@
 redhat-developer-hub:
   nameOverride: developer-hub
 
-  persistence:
-    enabled: true
-    accessMode: ReadWriteOnce
-    size: 5Gi
-    storageClass: ephemeral
-
   global:
     auth:
       backend:
