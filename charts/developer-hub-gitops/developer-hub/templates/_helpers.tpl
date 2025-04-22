@@ -19,7 +19,8 @@ helm.sh/chart: {{ include "developer-hub.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-argocd.argoproj.io/managed-by: openshift-gitops 
+argocd.argoproj.io/managed-by: openshift-gitops
+helm.sh/chart: upstream-1.5.1
 {{- end }}
 
 {{/*
@@ -30,6 +31,7 @@ app.kubernetes.io/name: {{ include "developer-hub.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app: developer-hub
 argocd.argoproj.io/managed-by: openshift-gitopss
+helm.sh/chart: upstream-1.5.1
 {{- end }}
 
 {{/*
