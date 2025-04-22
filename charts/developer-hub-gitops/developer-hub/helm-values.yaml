@@ -1,4 +1,12 @@
 redhat-developer-hub:
+  nameOverride: developer-hub
+
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: standard
+
   global:
     auth:
       backend:
@@ -14,6 +22,7 @@ redhat-developer-hub:
           package: ./dynamic-plugins/dist/backstage-plugin-kubernetes
         - disabled: false
           package: ./dynamic-plugins/dist/backstage-plugin-kubernetes-backend-dynamic
+
   route:
     enabled: true
     host: '{{ .Values.global.host }}'
@@ -23,6 +32,7 @@ redhat-developer-hub:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
     wildcardPolicy: None
+
   upstream:
     backstage:
       appConfig:
@@ -71,8 +81,11 @@ redhat-developer-hub:
           name: dynamic-plugins-root
         - mountPath: /tmp
           name: temp
+        - mountPath: /opt/app-root/src/storage
+          name: persistent-storage
       extraVolumes:
-        - ephemeral:
+        - name: dynamic-plugins-root
+          ephemeral:
             volumeClaimTemplate:
               spec:
                 accessModes:
@@ -80,12 +93,11 @@ redhat-developer-hub:
                 resources:
                   requests:
                     storage: 5Gi
-          name: dynamic-plugins-root
-        - configMap:
+        - name: dynamic-plugins
+          configMap:
             defaultMode: 420
             name: '{{ printf "%s-dynamic-plugins" .Release.Name }}'
             optional: true
-          name: dynamic-plugins
         - name: dynamic-plugins-npmrc
           secret:
             defaultMode: 420
@@ -98,6 +110,9 @@ redhat-developer-hub:
             secretName: '{{ printf "%s-dynamic-plugins-registry-auth" .Release.Name }}'
         - name: npmcacache
         - name: temp
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: rhdh-storage-pvc
       image:
         pullPolicy: Always
         registry: registry.redhat.io
@@ -150,28 +165,6 @@ redhat-developer-hub:
               name: temp
           workingDir: /opt/app-root/src
       installDir: /opt/app-root/src
-      livenessProbe:
-        httpGet:
-          path: /.backstage/health/v1/liveness
-          port: backend
-          scheme: HTTP
-        failureThreshold: 3
-        periodSeconds: 10
-        successThreshold: 1
-        timeoutSeconds: 4
-      podAnnotations:
-        checksum/dynamic-plugins: >-
-          {{- include "common.tplvalues.render" ( dict "value"
-          .Values.global.dynamic "context" $) | sha256sum }}
-      readinessProbe:
-        httpGet:
-          path: /.backstage/health/v1/readiness
-          port: backend
-          scheme: HTTP
-        failureThreshold: 3
-        periodSeconds: 10
-        successThreshold: 2
-        timeoutSeconds: 4
       replicas: 1
       resources:
         limits:
@@ -181,94 +174,22 @@ redhat-developer-hub:
         requests:
           cpu: 250m
           memory: 1Gi
-      revisionHistoryLimit: 10
-      startupProbe:
-        httpGet:
-          path: /.backstage/health/v1/liveness
-          port: backend
-          scheme: HTTP
-        failureThreshold: 3
-        initialDelaySeconds: 30
-        periodSeconds: 20
-        successThreshold: 1
-        timeoutSeconds: 4
-    clusterDomain: cluster.local
-    diagnosticMode:
-      args:
-        - infinity
-      command:
-        - sleep
-      enabled: false
-    ingress:
-      enabled: false
-      host: '{{ .Values.global.host }}'
-      path: /
-      tls:
-        enabled: false
-    metrics:
-      serviceMonitor:
-        enabled: false
-        path: /metrics
-        port: http-metrics
-    nameOverride: developer-hub
-    networkPolicy:
-      egressRules:
-        denyConnectionsToExternal: false
-      enabled: false
-    postgresql:
-      auth:
-        secretKeys:
-          adminPasswordKey: postgres-password
-          userPasswordKey: password
-      enabled: true
-      image:
-        registry: registry.redhat.io
-        repository: rhel9/postgresql-15@sha256
-        tag: 450a3c82d66f0642eee81fc3b19f8cf01fbc18b8e9dbbd2268ca1f471898db2f
-      postgresqlDataDir: /var/lib/pgsql/data/userdata
-      primary:
-        containerSecurityContext:
-          enabled: false
-        extraEnvVars:
-          - name: POSTGRESQL_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: postgres-password
-                name: '{{- include "postgresql.v1.secretName" . }}'
-        persistence:
-          enabled: true
-          mountPath: /var/lib/pgsql/data
-          size: 1Gi
-        podSecurityContext:
-          enabled: false
-        resources:
-          limits:
-            cpu: 250m
-            ephemeral-storage: 20Mi
-            memory: 1024Mi
-          requests:
-            cpu: 250m
-            memory: 256Mi
-    service:
-      externalTrafficPolicy: Cluster
-      extraPorts:
-        - name: http-metrics
-          port: 9464
-          targetPort: 9464
-      ports:
-        backend: 7007
-        name: http-backend
-        targetPort: backend
-      sessionAffinity: None
-      type: ClusterIP
-    serviceAccount:
-      automountServiceAccountToken: true
-      create: false
-  nameOverride: developer-hub
+
+  postgresql:
+    enabled: true
+    auth:
+      secretKeys:
+        adminPasswordKey: postgres-password
+        userPasswordKey: password
+    primary:
+      persistence:
+        enabled: true
+        mountPath: /var/lib/pgsql/data
+        size: 1Gi
+
   test:
     enabled: true
     image:
       registry: quay.io
       repository: curl/curl
       tag: latest
-  
