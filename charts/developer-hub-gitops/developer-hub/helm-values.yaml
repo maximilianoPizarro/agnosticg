@@ -61,7 +61,7 @@ redhat-developer-hub:
         - name: K8S_CLUSTER_NAME
           value: cluster.local
         - name: K8S_CLUSTER_URL
-          value: 'https://api.cluster-pqp2q.pqp2q.sandbox1259.opentlc.com:6443'
+          value: 'https://api.sandbox-m2.ll9k.p1.openshiftapps.com:6443'
         - name: K8S_CLUSTER_TOKEN
           valueFrom:
             secretKeyRef:
@@ -71,7 +71,14 @@ redhat-developer-hub:
         - mountPath: /opt/app-root/src/dynamic-plugins-root
           name: dynamic-plugins-root
       extraVolumes:
-        - emptyDir: {}
+        - ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 2Gi
           name: dynamic-plugins-root
         - configMap:
             defaultMode: 420
