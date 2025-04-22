@@ -3,7 +3,7 @@ redhat-developer-hub:
     auth:
       backend:
         enabled: true
-    clusterRouterBase: apps.cluster-pqp2q.pqp2q.sandbox1259.opentlc.com
+    clusterRouterBase: apps.shrocp4upi418ovn.lab.upshift.rdu2.redhat.com
     dynamic:
       includes:
         - dynamic-plugins.default.yaml
@@ -161,7 +161,7 @@ redhat-developer-hub:
     postgresql:
       auth:
         secretKeys:
-          adminPasswordKey: rhdh-password
+          adminPasswordKey: postgres-password
           userPasswordKey: password
       enabled: true
       image:
@@ -176,7 +176,7 @@ redhat-developer-hub:
           - name: POSTGRESQL_ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:
-                key: posgres-password
+                key: postgres-password
                 name: '{{- include "postgresql.v1.secretName" . }}'
         persistence:
           enabled: true
