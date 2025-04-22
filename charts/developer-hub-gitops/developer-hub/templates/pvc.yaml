@@ -11,7 +11,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: ephemeral
   hostPath:
-    path: /tmp/ephemeral-data
+    path: /opt/app-root/src/storage
     type: DirectoryOrCreate
 ---
 apiVersion: v1
@@ -27,7 +27,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: ephemeral
   hostPath:
-    path: /tmp/ephemeral-data
+    path: /tmp
     type: DirectoryOrCreate
 ---
 apiVersion: v1
@@ -43,7 +43,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: ephemeral
   hostPath:
-    path: /tmp/ephemeral-data
+    path: /var/lib/pgsql/data
     type: DirectoryOrCreate
 ---
 apiVersion: v1
