@@ -97,8 +97,7 @@ spec:
             failureThreshold: 6
       volumes:
         - name: dshm
-          emptyDir:
-            medium: Memory
+          emptyDir: {}
         - name: postgres-pvc
           persistentVolumeClaim:
             claimName: postgres-pvc
