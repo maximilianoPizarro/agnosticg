@@ -79,6 +79,7 @@ redhat-developer-hub:
                 resources:
                   requests:
                     storage: 2Gi
+                storageClassName: gp2
           name: dynamic-plugins-root
         - configMap:
             defaultMode: 420
@@ -189,6 +190,7 @@ redhat-developer-hub:
           enabled: true
           mountPath: /var/lib/pgsql/data
           size: 1Gi
+          storageClassName: gp2
         podSecurityContext:
           enabled: false
     service:
