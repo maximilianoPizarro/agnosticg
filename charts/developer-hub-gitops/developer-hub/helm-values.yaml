@@ -85,14 +85,8 @@ redhat-developer-hub:
           name: persistent-storage
       extraVolumes:
         - name: dynamic-plugins-root
-          ephemeral:
-            volumeClaimTemplate:
-              spec:
-                accessModes:
-                  - ReadWriteOnce
-                resources:
-                  requests:
-                    storage: 5Gi
+          persistentVolumeClaim:
+            claimName: rhdh-storage-plugins-pvc
         - name: dynamic-plugins
           configMap:
             defaultMode: 420
@@ -183,9 +177,11 @@ redhat-developer-hub:
         userPasswordKey: password
     primary:
       persistence:
-        enabled: false
+        enabled: true
         mountPath: /var/lib/pgsql/data
         size: 1Gi
+        existingClaim: postgres-pvc
+        storageClass: ephemeral
 
   test:
     enabled: true
