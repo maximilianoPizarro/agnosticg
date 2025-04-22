@@ -42,10 +42,6 @@ redhat-developer-hub:
           baseUrl: 'https://{{- include "janus-idp.hostname" . }}'
           cors:
             origin: 'https://{{- include "janus-idp.hostname" . }}'
-          database:
-            connection:
-              password: '${POSTGRESQL_ADMIN_PASSWORD}'
-              user: postgres
       args:
         - '--config'
         - dynamic-plugins-root/app-config.dynamic-plugins.yaml
