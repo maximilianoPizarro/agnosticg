@@ -3,7 +3,7 @@ redhat-developer-hub:
     auth:
       backend:
         enabled: true
-    clusterRouterBase: apps.shrocp4upi418ovn.lab.upshift.rdu2.redhat.com
+    clusterRouterBase: apps.rosa.bdiwk-rzah8-xni.geui.p3.openshiftapps.com
     dynamic:
       includes:
         - dynamic-plugins.default.yaml

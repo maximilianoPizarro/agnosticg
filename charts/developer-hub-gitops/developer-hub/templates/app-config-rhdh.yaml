@@ -8,7 +8,7 @@ data:
   app-config-rhdh.yaml: |
     app:
       title: Red Hat Developer Hub
-      baseUrl: https://rhdh-redhat-developer-hub-developer-hub.apps.cluster-pqp2q.pqp2q.sandbox1259.opentlc.com/
+      baseUrl: https://rhdh-redhat-developer-hub.apps.rosa.bdiwk-rzah8-xni.geui.p3.openshiftapps.com/
     auth:
       allowGuestAccess: true
       environment: development
