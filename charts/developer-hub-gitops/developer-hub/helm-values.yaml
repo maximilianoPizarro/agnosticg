@@ -30,8 +30,11 @@ redhat-developer-hub:
           baseUrl: 'https://{{- include "janus-idp.hostname" . }}'
         backend:
           auth:
-            keys:
-              - secret: '${BACKEND_SECRET}'
+            externalAccess:
+              - options:
+                  secret: '${BACKEND_SECRET}'
+                  subject: legacy-default-config
+                type: legacy
           baseUrl: 'https://{{- include "janus-idp.hostname" . }}'
           cors:
             origin: 'https://{{- include "janus-idp.hostname" . }}'
@@ -44,9 +47,14 @@ redhat-developer-hub:
         - dynamic-plugins-root/app-config.dynamic-plugins.yaml
       containerPorts:
         backend: 7007
-      extraAppConfig:
-        - configMapRef: app-config-rhdh
-          filename: app-config-rhdh.yaml
+      containerSecurityContext:
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
       extraEnvVars:
         - name: BACKEND_SECRET
           valueFrom:
@@ -58,18 +66,11 @@ redhat-developer-hub:
             secretKeyRef:
               key: postgres-password
               name: '{{- include "janus-idp.postgresql.secretName" . }}'
-        - name: K8S_CLUSTER_NAME
-          value: cluster.local
-        - name: K8S_CLUSTER_URL
-          value: 'https://api.sandbox-m2.ll9k.p1.openshiftapps.com:6443'
-        - name: K8S_CLUSTER_TOKEN
-          valueFrom:
-            secretKeyRef:
-              key: token
-              name: backstage-read-only
       extraVolumeMounts:
         - mountPath: /opt/app-root/src/dynamic-plugins-root
           name: dynamic-plugins-root
+        - mountPath: /tmp
+          name: temp
       extraVolumes:
         - ephemeral:
             volumeClaimTemplate:
@@ -78,24 +79,30 @@ redhat-developer-hub:
                   - ReadWriteOnce
                 resources:
                   requests:
-                    storage: 2Gi
-                storageClassName: gp2
+                    storage: 5Gi
           name: dynamic-plugins-root
         - configMap:
             defaultMode: 420
-            name: dynamic-plugins
+            name: '{{ printf "%s-dynamic-plugins" .Release.Name }}'
             optional: true
           name: dynamic-plugins
         - name: dynamic-plugins-npmrc
           secret:
             defaultMode: 420
             optional: true
-            secretName: dynamic-plugins-npmrc
+            secretName: '{{ printf "%s-dynamic-plugins-npmrc" .Release.Name }}'
+        - name: dynamic-plugins-registry-auth
+          secret:
+            defaultMode: 416
+            optional: true
+            secretName: '{{ printf "%s-dynamic-plugins-registry-auth" .Release.Name }}'
+        - name: npmcacache
+        - name: temp
       image:
         pullPolicy: Always
         registry: registry.redhat.io
         repository: rhdh/rhdh-hub-rhel9@sha256
-        tag: 9709e056f194a24c809dd82b4ab10aa05a9c31574e68ae8d1a5e91de19237045
+        tag: 9fd11a4551da42349809bbf34eb54c3b0ca8a3884d556593656af79e72786c01
       initContainers:
         - command:
             - ./install-dynamic-plugins.sh
@@ -106,6 +113,23 @@ redhat-developer-hub:
           image: '{{ include "backstage.image" . }}'
           imagePullPolicy: Always
           name: install-dynamic-plugins
+          resources:
+            limits:
+              cpu: 1000m
+              ephemeral-storage: 5Gi
+              memory: 2.5Gi
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
           volumeMounts:
             - mountPath: /dynamic-plugins-root
               name: dynamic-plugins-root
@@ -117,34 +141,57 @@ redhat-developer-hub:
               name: dynamic-plugins-npmrc
               readOnly: true
               subPath: .npmrc
+            - mountPath: /opt/app-root/src/.config/containers
+              name: dynamic-plugins-registry-auth
+              readOnly: true
+            - mountPath: /opt/app-root/src/.npm/_cacache
+              name: npmcacache
+            - mountPath: /tmp
+              name: temp
           workingDir: /opt/app-root/src
       installDir: /opt/app-root/src
       livenessProbe:
-        failureThreshold: 3
         httpGet:
-          path: /healthcheck
-          port: 7007
+          path: /.backstage/health/v1/liveness
+          port: backend
           scheme: HTTP
-        initialDelaySeconds: 60
+        failureThreshold: 3
         periodSeconds: 10
         successThreshold: 1
-        timeoutSeconds: 2
+        timeoutSeconds: 4
       podAnnotations:
         checksum/dynamic-plugins: >-
           {{- include "common.tplvalues.render" ( dict "value"
           .Values.global.dynamic "context" $) | sha256sum }}
       readinessProbe:
-        failureThreshold: 3
         httpGet:
-          path: /healthcheck
-          port: 7007
+          path: /.backstage/health/v1/readiness
+          port: backend
           scheme: HTTP
-        initialDelaySeconds: 30
+        failureThreshold: 3
         periodSeconds: 10
         successThreshold: 2
-        timeoutSeconds: 2
+        timeoutSeconds: 4
       replicas: 1
+      resources:
+        limits:
+          cpu: 1000m
+          ephemeral-storage: 5Gi
+          memory: 2.5Gi
+        requests:
+          cpu: 250m
+          memory: 1Gi
       revisionHistoryLimit: 10
+      startupProbe:
+        httpGet:
+          path: /.backstage/health/v1/liveness
+          port: backend
+          scheme: HTTP
+        failureThreshold: 3
+        initialDelaySeconds: 30
+        periodSeconds: 20
+        successThreshold: 1
+        timeoutSeconds: 4
     clusterDomain: cluster.local
     diagnosticMode:
       args:
@@ -155,12 +202,14 @@ redhat-developer-hub:
     ingress:
       enabled: false
       host: '{{ .Values.global.host }}'
+      path: /
       tls:
         enabled: false
     metrics:
       serviceMonitor:
         enabled: false
         path: /metrics
+        port: http-metrics
     nameOverride: developer-hub
     networkPolicy:
       egressRules:
@@ -175,7 +224,7 @@ redhat-developer-hub:
       image:
         registry: registry.redhat.io
         repository: rhel9/postgresql-15@sha256
-        tag: f1f581d8974799f17d4707f9161b2d0568a07255e535ca3be3b36ce254b091a4
+        tag: 450a3c82d66f0642eee81fc3b19f8cf01fbc18b8e9dbbd2268ca1f471898db2f
       postgresqlDataDir: /var/lib/pgsql/data/userdata
       primary:
         containerSecurityContext:
@@ -190,11 +239,22 @@ redhat-developer-hub:
           enabled: true
           mountPath: /var/lib/pgsql/data
           size: 1Gi
-          storageClassName: gp2
         podSecurityContext:
           enabled: false
+        resources:
+          limits:
+            cpu: 250m
+            ephemeral-storage: 20Mi
+            memory: 1024Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
     service:
       externalTrafficPolicy: Cluster
+      extraPorts:
+        - name: http-metrics
+          port: 9464
+          targetPort: 9464
       ports:
         backend: 7007
         name: http-backend
@@ -204,4 +264,11 @@ redhat-developer-hub:
     serviceAccount:
       automountServiceAccountToken: true
       create: false
-      name: backstage-read-only
+  nameOverride: developer-hub
+  test:
+    enabled: true
+    image:
+      registry: quay.io
+      repository: curl/curl
+      tag: latest
+  
