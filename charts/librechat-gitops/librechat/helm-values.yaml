@@ -2,7 +2,7 @@ librechat:
   global:
     librechat:
       existingSecretApiKey: OPENAI_API_KEY
-      existingSecretName: librechat-credentials-env
+      #existingSecretName: librechat-credentials-env
   image:
     pullPolicy: IfNotPresent
     registry: ghcr.io
@@ -89,7 +89,7 @@ librechat:
             modelDisplayLabel: "OpenRouter"
 
     existingConfigYaml: ''
-    existingSecretName: librechat-credentials-env
+    #existingSecretName: librechat-credentials-env
     serviceAccountName: librechat-sa
     imageVolume:
       accessModes: ReadWriteOnce
