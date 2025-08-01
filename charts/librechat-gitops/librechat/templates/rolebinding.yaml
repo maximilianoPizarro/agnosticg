@@ -46,6 +46,7 @@ rules:
       - get
       - list
       - watch
+      - patch 
   - apiGroups:
       - networking.k8s.io
     resources:
@@ -70,7 +71,6 @@ rules:
       - patch
       - update
       - watch
-  # NEW RULE ADDED: Permissions for ProjectHelmChartRepositories
   - apiGroups:
       - helm.openshift.io
     resources:
