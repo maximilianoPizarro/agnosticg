@@ -1,47 +1,60 @@
-{{- define "developer-hub.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "developer-hub.chart" -}}
+{{- define "librechat.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "librechat.fullname" -}}
+{{- if $.Values.fullnameOverride }}
+{{- $.Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "developer-hub.labels" -}}
-helm.sh/chart: {{ include "developer-hub.chart" . }}
-{{ include "developer-hub.selectorLabels" . }}
+{{- define "librechat.labels" -}}
+helm.sh/chart: {{ include "librechat.chart" . }}
+{{ include "librechat.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-argocd.argoproj.io/managed-by: openshift-gitops
-helm.sh/chart: upstream-1.5.1
-app.kubernetes.io/managed-by: Helm
 {{- end }}
 
 {{/*
 Selector labels
 */}}
-{{- define "developer-hub.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "developer-hub.name" . }}
+{{- define "librechat.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "librechat.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app: developer-hub
-argocd.argoproj.io/managed-by: openshift-gitopss
-helm.sh/chart: upstream-1.5.1
-app.kubernetes.io/managed-by: Helm
+{{- end }}
+
+
+{{/*
+RAG Selector labels
+*/}}
+{{- define "rag.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "librechat.fullname" . }}-rag
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "developer-hub.serviceAccountName" -}}
+{{- define "librechat.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "developer-hub.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "librechat.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
