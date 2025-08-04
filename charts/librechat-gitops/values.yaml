@@ -1,0 +1,8 @@
+mongodb:
+  enabled: false
+postgresql:
+  enabled: false
+meilisearch:
+  enabled: false
+librechat-rag-api:
+  enabled: false
