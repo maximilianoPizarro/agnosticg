@@ -7,18 +7,77 @@ resources:
 - ./helm-repository.yaml
 
 helmCharts:
-- name: mongodb
-  repo: https://charts.bitnami.com/bitnami
-  version: "16.3.0"
-  releaseName: librechat-mongodb
-- name: postgresql
-  repo: https://charts.bitnami.com/bitnami
-  version: "15.5.38"
-  releaseName: librechat-postgresql
-- name: librechat
-  repo: https://maximilianopizarro.github.io/librechat/
-  version: "1.8.10"
-  releaseName: librechat-openshift
-  #valuesFile: values.yaml
-  #valuesInline:
-  #  fullnameOverride: helloagain
+  # ----------------------------------------------------
+  # 1. Dependencia: MongoDB
+  # ----------------------------------------------------
+  - name: mongodb
+    repo: https://charts.bitnami.com/bitnami
+    version: "16.3.0"
+    releaseName: librechat-mongodb
+    valuesInline:
+      auth:
+        rootPassword: "mongoroot"
+      
+  # ----------------------------------------------------
+  # 2. Dependencia: PostgreSQL
+  # ----------------------------------------------------
+  - name: postgresql
+    repo: https://charts.bitnami.com/bitnami
+    version: "15.5.38"
+    releaseName: librechat-postgresql
+    valuesInline:
+      auth:
+        database: librechat
+        username: librechat
+        password: "postgresroot"
+
+  # ----------------------------------------------------
+  # 3. Dependencia: Meilisearch (si es un chart separado)
+  #    Necesitas encontrar su repo y version.
+  # ----------------------------------------------------
+  - name: meilisearch
+    repo: https://helm.meilisearch.com/
+    version: "0.10.1" # Verifica la version correcta en el repositorio
+    releaseName: librechat-meilisearch
+    # Puedes agregar valuesInline para la configuración si es necesario.
+    
+  # ----------------------------------------------------
+  # 4. Dependencia: librechat-rag-api
+  #    Esto parece ser una dependencia del mismo repositorio.
+  #    Tendrías que investigarlo si es un chart separado.
+  # ----------------------------------------------------
+  - name: librechat-rag-api
+    repo: https://maximilianopizarro.github.io/librechat/
+    version: "1.8.10" # Utiliza la misma versión que el chart principal
+    releaseName: librechat-rag-api
+
+  # ----------------------------------------------------
+  # 5. Chart Principal: librechat
+  # ----------------------------------------------------
+  - name: librechat
+    repo: https://maximilianopizarro.github.io/librechat/
+    version: "1.8.10"
+    releaseName: librechat-openshift
+    valuesInline:
+      # Deshabilita los charts internos del chart de LibreChat
+      mongodb:
+        enabled: false
+      postgresql:
+        enabled: false
+      meilisearch:
+        enabled: false
+      librechat-rag-api:
+        enabled: false
+        
+      # Configura la conexión a las bases de datos y otros servicios
+      database:
+        host: librechat-postgresql
+        port: 5432
+        database: librechat
+        user: librechat
+        password: "postgresroot"
+      mongodb:
+        host: librechat-mongodb
+        port: 27017
+        username: root
+        password: "mongoroot"
