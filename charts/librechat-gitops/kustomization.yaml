@@ -8,7 +8,7 @@ resources:
 
 helmCharts:
 - name: librechat
-  repo: https://maximilianopizarro.github.io/librechat/
+  repo: file://./charts/librechat
   version: "1.8.10"
   releaseName: librechat
   #valuesFile: values.yaml
