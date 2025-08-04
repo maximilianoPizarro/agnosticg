@@ -1,10 +1,18 @@
+# kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 namespace: librechat
 
 resources:
-- ./helm-repository.yaml
+  - ./helm-repository.yaml # Asumiendo que este archivo incluye la configuración para librechat y bitnami
+  - ./bitnami-repo.yaml    # Añadido para gestionar el repositorio de Bitnami
+
+# Agrega este bloque para deshabilitar la gestión automática de dependencias de Helm
+# Es fundamental para que Kustomize no falle al encontrar sub-charts faltantes.
+helmGlobals:
+  subchartArgs:
+    skipDeps: true
 
 helmCharts:
   # ----------------------------------------------------
@@ -32,6 +40,23 @@ helmCharts:
         password: "postgresroot"
 
   # ----------------------------------------------------
+  # 3. Dependencia: Meilisearch
+  # ----------------------------------------------------
+  - name: meilisearch
+    repo: https://helm.meilisearch.com/
+    version: "0.10.1" 
+    releaseName: librechat-meilisearch
+    
+  # ----------------------------------------------------
+  # 4. Dependencia: librechat-rag-api
+  #    Este chart debe existir en el mismo repositorio de LibreChat.
+  # ----------------------------------------------------
+  - name: librechat-rag-api
+    repo: https://maximilianopizarro.github.io/librechat/
+    version: "1.8.10"
+    releaseName: librechat-rag-api
+
+  # ----------------------------------------------------
   # 5. Chart Principal: librechat
   # ----------------------------------------------------
   - name: librechat
@@ -39,7 +64,7 @@ helmCharts:
     version: "1.8.10"
     releaseName: librechat-openshift
     valuesInline:
-      # Deshabilita los charts internos del chart de LibreChat
+      # Deshabilita los charts internos. Esto ahora funcionará.
       mongodb:
         enabled: false
       postgresql:
@@ -49,7 +74,7 @@ helmCharts:
       librechat-rag-api:
         enabled: false
         
-      # Configura la conexión a las bases de datos y otros servicios
+      # Configura la conexión a los servicios
       database:
         host: librechat-postgresql
         port: 5432
@@ -61,3 +86,7 @@ helmCharts:
         port: 27017
         username: root
         password: "mongoroot"
+      meilisearch:
+        url: http://librechat-meilisearch:7700
+      ragAPI:
+        url: http://librechat-rag-api:3000
