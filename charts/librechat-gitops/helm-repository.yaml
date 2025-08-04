@@ -7,3 +7,13 @@ spec:
     url: 'https://maximilianopizarro.github.io/librechat/'
   description: LibreChat on OpenShift
   name: LibreChat
+---
+apiVersion: helm.openshift.io/v1beta1
+kind: ProjectHelmChartRepository
+metadata:
+  name: bitnami-charts
+spec:
+  connectionConfig:
+    url: 'https://charts.bitnami.com/bitnami'
+  description: Official repository for Bitnami Helm charts
+  name: Bitnami
