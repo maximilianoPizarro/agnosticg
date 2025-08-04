@@ -6,8 +6,7 @@ namespace: librechat
 
 resources:
   - ./helm-repository.yaml # Asumiendo que este archivo incluye la configuración para librechat y bitnami
-  - ./bitnami-repo.yaml    # Añadido para gestionar el repositorio de Bitnami
-
+  
 # Agrega este bloque para deshabilitar la gestión automática de dependencias de Helm
 # Es fundamental para que Kustomize no falle al encontrar sub-charts faltantes.
 helmGlobals:
