@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+- name: librechat-openshift
+  repo: https://maximilianopizarro.github.io/librechat/
+  version: "1.8.10"
+  releaseName: librechat
+  namespace: librechat
+  #valuesFile: values.yaml
+  #valuesInline:
+  #  fullnameOverride: helloagain
