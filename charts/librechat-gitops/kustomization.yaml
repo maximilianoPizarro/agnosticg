@@ -10,6 +10,7 @@ helmCharts:
 - name: librechat
   version: "1.8.10"
   releaseName: librechat
+  chartHome: ./charts
   valuesFile: values.yaml
   #valuesInline:
   #  fullnameOverride: helloagain
