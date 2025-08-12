@@ -87,7 +87,16 @@ librechat:
             titleModel: "llama2"
             summarize: false
             summaryModel: "llama2"
-    
+          - name: "Mistral"
+            apiKey: "eyJhbGciOiJSUzI1NiIsImtpZCI6IkZGWU5Sdnh4LU1LZndQa0Q3WmJMa3dCNXNieS13bE51MExxUmF0ZGNaQzQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJsbG0iLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlY3JldC5uYW1lIjoiZGVmYXVsdC1uYW1lLW1pc3RyYWwtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoibWlzdHJhbC1zYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjM5MDkwZGUyLWMwMWEtNGI4My1iOGUzLThjYzkzNzhiNzY3NCIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpsbG06bWlzdHJhbC1zYSJ9.I7WjBFikRhCC4t21rouAYXXpPcuZ_CYcM_qpB3jsfFL_SKpKnhTPW0Zz7KLPTOl5c8vewoFQYqhpiPZJ5QWg9FwnzVjwoAy94MylnIaM0mpVfvYWW0Y-P2k491U5tG096fjWhB9BTGkWXyRTNKLCybzm62EbvMaXHXx6_WGV17QAzOPkbXzh8OKquGO7uxmW0jC2WhJgenOakS72lpkYN0Z-3oKDb1DmRujp2LSGeHtPk_lG4CcB1cumfcqHPZqgn1pFBLblD71lbRc_OSgynH3ZWhvQki5OLA3yU_578F6_aMeqm_jMFSBjE8v7ZYuT2ovrsImrq97o0GJRpoBvrUXBAv4gTPhfpPEqyQ79lyRh9irLG8PpjUerV-TG4A_Qa0HfRCLaaPWTjhf3rJV3dS64dXaJCYfW1ZEOJJYF5cEc7j-5Y0nwXcvqaxJJoMU5mL1ZxnpjSq5Xu7UDuRXQwb9qedLvUwVWpcx1m6pCtYnrR0UkcfiOWRUMz0BU-bK_U2KwLKecjR-h6FyfDzxjVcCn4-Qg51Fi0wkfJoGCIKHI2MDH39hJngv-LwVHPnUXbXiW5NeIIEmv0i_9ScYO46jMTmki2KN2WNTRTo-ThrKzuVFs2Z_mVEwBPSi-LxI7sucQi-dIaaAP1aJtTlWkB_8HpTfk-wgYzJQ7ahp15tA"
+            baseURL: "https://my-model.llm.svc.cluster.local/v1"" # Adjust if Ollama is on a different host
+            models:
+              default: ["Mistral-7B-Instruct-v0.2"] # Example models, fetch from your Ollama instance
+              fetch: true
+            titleConvo: true
+            titleModel: "Mistral-7B-Instruct-v0.2"
+            summarize: false
+            summaryModel: "Mistral-7B-Instruct-v0.2"    
     existingConfigYaml: ''
     existingSecretName: credentials-env
     serviceAccountName: librechat-sa
