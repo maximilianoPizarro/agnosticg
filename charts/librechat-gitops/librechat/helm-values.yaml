@@ -197,9 +197,11 @@ librechat:
       mountPath: /app/api/logs
   volumes:
     - name: librechat-uploads-volume
-      emptyDir: {} 
+      persistentVolumeClaim: 
+        claimName: librechat-librechat-images 
     - name: librechat-data-volume
-      emptyDir: {} 
+      persistentVolumeClaim: 
+        claimName: librechat-rag-api-data 
     - name: librechat-logs-volume
       emptyDir: {}
     - name: librechat-api-logs-volume
