@@ -99,7 +99,7 @@ librechat:
             summaryModel: "Mistral-7B-Instruct-v0.2"    
     existingConfigYaml: ''
     existingSecretName: credentials-environment
-    serviceAccountName: librechat-sa
+    serviceAccountName: default
     imageVolume:
       accessModes: ReadWriteOnce
       enabled: true
@@ -130,7 +130,7 @@ librechat:
     persistence:
       enabled: true
       storageClass: 'gp3-csi'
-    serviceAccountName: librechat-meilisearch-sa
+    serviceAccountName: default
   postgresql:
     auth:
       database: librechat-vectordb
