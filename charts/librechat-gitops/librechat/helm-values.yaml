@@ -2,7 +2,7 @@ librechat:
   global:
     librechat:
       existingSecretApiKey: OPENAI_API_KEY
-      existingSecretName: credentials-env
+      existingSecretName: credentials-environment
   image:
     pullPolicy: IfNotPresent
     registry: ghcr.io
@@ -98,7 +98,7 @@ librechat:
             summarize: false
             summaryModel: "Mistral-7B-Instruct-v0.2"    
     existingConfigYaml: ''
-    existingSecretName: credentials-env
+    existingSecretName: credentials-environment
     serviceAccountName: librechat-sa
     imageVolume:
       accessModes: ReadWriteOnce
@@ -123,7 +123,7 @@ librechat:
   lifecycle: {}
   meilisearch:
     auth:
-      existingMasterKeySecret: credentials-env
+      existingMasterKeySecret: credentials-environment
     enabled: true
     image:
       tag: v1.7.3
