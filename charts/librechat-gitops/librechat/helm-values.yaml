@@ -198,7 +198,7 @@ librechat:
   volumes:
     - name: librechat-uploads-volume
       persistentVolumeClaim: 
-        claimName: librechat-librechat-images 
+        claimName: librechat-data
     - name: librechat-data-volume
       persistentVolumeClaim: 
         claimName: librechat-rag-api-data 
